@@ -44,6 +44,8 @@ fn main() {
 
     let mut flop_high_card: Vec<bool> = vec![false; rows];
     let mut flop_pair: Vec<bool> = vec![false; rows];
+    let mut flop_top_pair: Vec<bool> = vec![false; rows];
+    let mut flop_top_pair_top_kicker: Vec<bool> = vec![false; rows];
     let mut flop_two_pair: Vec<bool> = vec![false; rows];
     let mut flop_three_of_a_kind: Vec<bool> = vec![false; rows];
     let mut flop_straight: Vec<bool> = vec![false; rows];
@@ -55,6 +57,8 @@ fn main() {
 
     let mut turn_high_card: Vec<bool> = vec![false; rows];
     let mut turn_pair: Vec<bool> = vec![false; rows];
+    let mut turn_top_pair: Vec<bool> = vec![false; rows];
+    let mut turn_top_pair_top_kicker: Vec<bool> = vec![false; rows];
     let mut turn_two_pair: Vec<bool> = vec![false; rows];
     let mut turn_three_of_a_kind: Vec<bool> = vec![false; rows];
     let mut turn_straight: Vec<bool> = vec![false; rows];
@@ -66,6 +70,8 @@ fn main() {
 
     let mut river_high_card: Vec<bool> = vec![false; rows];
     let mut river_pair: Vec<bool> = vec![false; rows];
+    let mut river_top_pair: Vec<bool> = vec![false; rows];
+    let mut river_top_pair_top_kicker: Vec<bool> = vec![false; rows];
     let mut river_two_pair: Vec<bool> = vec![false; rows];
     let mut river_three_of_a_kind: Vec<bool> = vec![false; rows];
     let mut river_straight: Vec<bool> = vec![false; rows];
@@ -210,6 +216,14 @@ fn main() {
 
             flop_high_card[idx] = flop_eval.is_high_card();
             flop_pair[idx] = flop_eval.is_pair();
+            flop_top_pair[idx] = flop_pair[idx]
+                & (hand[0].rank() == sorted_flop[2].rank()
+                    || hand[1].rank() == sorted_flop[2].rank());
+            flop_top_pair_top_kicker[idx] = flop_top_pair[idx]
+                & match sorted_flop[2].rank() {
+                    Rank::Ace => hand[0].rank() == Rank::King,
+                    _ => hand[1].rank() == Rank::Ace,
+                };
             flop_two_pair[idx] = flop_eval.is_two_pair();
             flop_three_of_a_kind[idx] = flop_eval.is_three_of_a_kind();
             flop_straight[idx] = flop_eval.is_straight();
@@ -225,6 +239,14 @@ fn main() {
 
             turn_high_card[idx] = turn_eval.is_high_card();
             turn_pair[idx] = turn_eval.is_pair();
+            turn_top_pair[idx] = turn_pair[idx]
+                & (hand[0].rank() == sorted_turn[3].rank()
+                    || hand[1].rank() == sorted_turn[3].rank());
+            turn_top_pair_top_kicker[idx] = turn_top_pair[idx]
+                & match sorted_turn[2].rank() {
+                    Rank::Ace => hand[0].rank() == Rank::King,
+                    _ => hand[1].rank() == Rank::Ace,
+                };
             turn_two_pair[idx] = turn_eval.is_two_pair();
             turn_three_of_a_kind[idx] = turn_eval.is_three_of_a_kind();
             turn_straight[idx] = turn_eval.is_straight();
@@ -240,6 +262,14 @@ fn main() {
 
             river_high_card[idx] = river_eval.is_high_card();
             river_pair[idx] = river_eval.is_pair();
+            river_top_pair[idx] = river_pair[idx]
+                & (hand[0].rank() == sorted_river[4].rank()
+                    || hand[1].rank() == sorted_river[4].rank());
+            river_top_pair_top_kicker[idx] = river_top_pair[idx]
+                & match sorted_river[2].rank() {
+                    Rank::Ace => hand[0].rank() == Rank::King,
+                    _ => hand[1].rank() == Rank::Ace,
+                };            
             river_two_pair[idx] = river_eval.is_two_pair();
             river_three_of_a_kind[idx] = river_eval.is_three_of_a_kind();
             river_straight[idx] = river_eval.is_straight();
@@ -280,6 +310,8 @@ fn main() {
 
         "flop_high_card" => flop_high_card.iter().map(|&f| f as i32).collect::<Vec<i32>>(),
         "flop_pair" => flop_pair.iter().map(|&f| f as i32).collect::<Vec<i32>>(),
+        "flop_top_pair" => flop_top_pair.iter().map(|&f| f as i32).collect::<Vec<i32>>(),
+        "flop_top_pair_top_kicker" => flop_top_pair_top_kicker.iter().map(|&f| f as i32).collect::<Vec<i32>>(),
         "flop_two_pair" => flop_two_pair.iter().map(|&f| f as i32).collect::<Vec<i32>>(),
         "flop_three_of_a_kind" => flop_three_of_a_kind.iter().map(|&f| f as i32).collect::<Vec<i32>>(),
         "flop_straight" => flop_straight.iter().map(|&f| f as i32).collect::<Vec<i32>>(),
@@ -291,6 +323,8 @@ fn main() {
 
         "turn_high_card" => turn_high_card.iter().map(|&f| f as i32).collect::<Vec<i32>>(),
         "turn_pair" => turn_pair.iter().map(|&f| f as i32).collect::<Vec<i32>>(),
+        "turn_top_pair" => turn_top_pair.iter().map(|&f| f as i32).collect::<Vec<i32>>(),
+        "turn_top_pair_top_kicker" => turn_top_pair_top_kicker.iter().map(|&f| f as i32).collect::<Vec<i32>>(),        
         "turn_two_pair" => turn_two_pair.iter().map(|&f| f as i32).collect::<Vec<i32>>(),
         "turn_three_of_a_kind" => turn_three_of_a_kind.iter().map(|&f| f as i32).collect::<Vec<i32>>(),
         "turn_straight" => turn_straight.iter().map(|&f| f as i32).collect::<Vec<i32>>(),
@@ -302,6 +336,8 @@ fn main() {
 
         "river_high_card" => river_high_card.iter().map(|&f| f as i32).collect::<Vec<i32>>(),
         "river_pair" => river_pair.iter().map(|&f| f as i32).collect::<Vec<i32>>(),
+        "river_top_pair" => river_top_pair.iter().map(|&f| f as i32).collect::<Vec<i32>>(),
+        "river_top_pair_top_kicker" => river_top_pair_top_kicker.iter().map(|&f| f as i32).collect::<Vec<i32>>(),        
         "river_two_pair" => river_two_pair.iter().map(|&f| f as i32).collect::<Vec<i32>>(),
         "river_three_of_a_kind" => river_three_of_a_kind.iter().map(|&f| f as i32).collect::<Vec<i32>>(),
         "river_straight" => river_straight.iter().map(|&f| f as i32).collect::<Vec<i32>>(),
